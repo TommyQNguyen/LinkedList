@@ -1,43 +1,12 @@
-#include <iostream>
-#include <Windows.h>
-#include <conio.h>
-#include "C:\cvm.h"
+#include "LinkedList.h"
+#include "Vue.h"
 
 using namespace std;
 
-//Global variables
-const int MENU_ADD = 1, MENU_DELETE = 2, MENU_SHOW_ELEMENT = 3, MENU_QUIT = 4;
-
+//extern int sizeOfLinkedList = 0;
 int sizeOfLinkedList = 0;
-
-struct Node
-{
-	int data;
-	Node* next;
-};
-
 Node* head = NULL;
 Node* tail = NULL;
-
-//Function prototypes
-int showMenu();
-void createFirstNode(int value);
-void showNodeList();
-void recursiveShowNodeList(Node* nodePointer);
-void showNodeAt(int position);
-void recursiveShowNodeAt(Node* nodePointer, int position);
-void insertNodeAtBeginning(int value);
-void insertNodeAtEnd(int value);
-void insertNodeAtGivenPosition(int position, int value);
-void deleteFirstNode();
-void deleteLastNode();
-void deleteNodeAtGivenPosition(int pos);
-void menu_ADD();
-void menu_DELETE();
-void menu_SHOW_NODE();
-
-
-void init();
 
 
 int main()
@@ -48,7 +17,8 @@ int main()
 
 	int choice = 0;
 	while (choice != MENU_QUIT) {
-		choice = showMenu();
+		recursiveShowNodeList(head);
+		choice = showMenu(sizeOfLinkedList);
 
 		switch (choice) {
 		case MENU_ADD:
@@ -58,30 +28,15 @@ int main()
 			menu_DELETE();
 			break;
 		case MENU_SHOW_ELEMENT:
-			menu_SHOW_NODE();
+			menu_SHOW_NODE(head, sizeOfLinkedList);
 			break;
 		case MENU_QUIT:
 			break;
 		}
 	}
+
 }
 
-int showMenu() {
-	int choice;
-	recursiveShowNodeList(head);
-
-	cout << "\n\n" <<
-		"Que voulez-vous faire?\n\n" <<
-		"1 Ajouter un element à la liste?\n" <<
-		"2 Retirer un element de la liste?\n" <<
-		"3 Afficher un element de la liste?\n" <<
-		"4 Quitter?\n\n\n" <<
-		"Il y a présentement " << sizeOfLinkedList << " element(s) dans la liste\n\n\n\n" <<
-		"Votre choix : ";
-	cin >> choice;
-	clrscr();
-	return choice;
-}
 
 void createFirstNode(int value)
 {
@@ -103,25 +58,6 @@ void createFirstNode(int value)
 	sizeOfLinkedList++;
 }
 
-void showNodeList()
-{
-	Node* temp = head;
-
-	while (temp != NULL)
-	{
-		cout << temp->data << "\t";
-		temp = temp->next;
-	}
-}
-
-void recursiveShowNodeList(Node* nodePointer)
-{
-	if (nodePointer == NULL)
-		return;
-
-	cout << nodePointer->data << "\t";
-	recursiveShowNodeList(nodePointer->next);
-}
 
 void insertNodeAtBeginning(int value)
 {
@@ -132,6 +68,7 @@ void insertNodeAtBeginning(int value)
 	sizeOfLinkedList++;
 }
 
+//TODO remove me?
 void insertNodeAtEnd(int value)
 {
 	createFirstNode(value);
@@ -184,7 +121,7 @@ void deleteFirstNode()
 
 void deleteLastNode()
 {
-	if (sizeOfLinkedList == 0 && head == NULL && tail == NULL) 
+	if (sizeOfLinkedList == 0 && head == NULL && tail == NULL)
 		return;
 
 	if (head->next == NULL) //If the first node is the last node AKA 1 node only
@@ -212,7 +149,7 @@ void deleteNodeAtGivenPosition(int position)
 		return;							//0       1      2			cannot delete NULL.
 
 	if (position == 0)  //Case where there is only one node
-	{	
+	{
 		deleteFirstNode();
 		return;
 	}
@@ -229,98 +166,6 @@ void deleteNodeAtGivenPosition(int position)
 	sizeOfLinkedList--;
 }
 
-void menu_ADD()
-{
-	int dataInput = 0, indexInput = 0;
-
-	clrscr();
-	cout << "\n\n\n\n\nQuelle est la valeur ? : ";
-	cin >> dataInput;
-
-	clrscr();
-	cout << "\n\n\n\n\nQuelle est l'index? : ";
-	cin >> indexInput;
-	if (indexInput >= 0) // Negative number cases
-		insertNodeAtGivenPosition(indexInput, dataInput);
-	clrscr();
-}
-
-void menu_DELETE()
-{
-	int indexInput = 0;
-
-	clrscr();
-	cout << "\n\n\n\n\nQuelle est l'index? : ";
-	cin >> indexInput;
-	if (indexInput >= 0)
-		deleteNodeAtGivenPosition(indexInput);
-	clrscr();
-}
-
-void menu_SHOW_NODE()
-{
-	int indexInput = 0;
-	
-	clrscr();
-	cout << "\n\n\n\n\nQuelle est l'index? : ";
-	cin >> indexInput;
-	recursiveShowNodeAt(head, indexInput);
-	//showNodeAt(indexInput);
-	_getch();
-	clrscr();
-}
-
-void showNodeAt(int position)
-{
-	if (position < 0)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre negative!";
-		return;
-	}
-	if (position > sizeOfLinkedList)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre plus grande que la taille de la liste!";
-		return;
-	}
-	
-	Node* temp = head;
-
-	for (int i = 0; i <= position; i++)
-	{
-		if (i == position)
-		{
-			cout << temp->data;
-			return;
-		}
-		temp = temp->next;
-	}
-}
-
-void recursiveShowNodeAt(Node* nodePointer, int position)
-{
-	if (position < 0)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre negative!";
-		return;
-	}
-	if (position > sizeOfLinkedList)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre plus grande que la taille de la liste!";
-		return;
-	}
-
-	if (position == 0)
-	{
-		cout << nodePointer->data << "\t";
-		return;
-	}
-
-	recursiveShowNodeAt(nodePointer->next, position - 1);
-}
 
 void init() {
 	insertNodeAtBeginning(1);
@@ -328,19 +173,3 @@ void init() {
 	insertNodeAtBeginning(3);
 }
 
-void printErrorMessage(int position)
-{
-	if (position < 0)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre negative!";
-		return;
-	}
-	if (position > sizeOfLinkedList)
-	{
-		clrscr();
-		cout << "Position ne peut pas etre plus grande que la taille de la liste!";
-		return;
-	}
-
-}
